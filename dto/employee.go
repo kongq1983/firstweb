@@ -3,10 +3,10 @@ package dto
 import "fmt"
 
 type Employee struct {
-	Id    int
+	Id       int
 	Username string
-	Name  string
-	Age int
+	Name     string
+	Age      int
 }
 
 // requestBody接收，字段需要大写，否则值是接收不到的
@@ -18,5 +18,5 @@ type Employee struct {
 //}
 
 func (s *Employee) String() string {
-	return fmt.Sprintf("[id => %d name => %v, age => %v]", s.Id,s.Name, s.Age)
+	return fmt.Sprintf("[id => %d username=%s , name => %v, age => %v]", s.Id, s.Username, s.Name, s.Age)
 }

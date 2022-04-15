@@ -1,8 +1,8 @@
 package myweb
 
-
 //import "github.com/gin-gonic/gin"
 import (
+	"com.kq/dao"
 	"com.kq/dao/employee"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -12,6 +12,7 @@ import (
 	//"dto/Employee"
 	"com.kq/dto"
 )
+
 // https://github.com/gin-gonic/gin/
 func main111() {
 	r := gin.Default()
@@ -23,10 +24,7 @@ func main111() {
 	r.Run() // 监听并在 0.0.0.0:8080 上启动服务
 }
 
-
-
-
-func Init()  {
+func Init() {
 
 	r := gin.Default()
 	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
@@ -40,12 +38,12 @@ func Init()  {
 
 		var username = c.Query("username")
 		var name = c.Query("name")
-		var age,err = strconv.Atoi(c.Query("age"))
-		if err!=nil {
+		var age, err = strconv.Atoi(c.Query("age"))
+		if err != nil {
 			age = 0
 		}
 
-		var emp = dto.Employee{Username:username,Name:name,Age:age}
+		var emp = dto.Employee{Username: username, Name: name, Age: age}
 
 		//fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
 		fmt.Printf("username: %s; age: %d; name: %s; \n", emp.Username, emp.Age, emp.Name)
@@ -53,7 +51,7 @@ func Init()  {
 		employee.Add(emp)
 
 		//c.JSON(http.StatusOK, emp)
-		c.JSON(http.StatusOK, gin.H{"username":username,"name":name,"age":age,"method":"post"})
+		c.JSON(http.StatusOK, gin.H{"username": username, "name": name, "age": age, "method": "post"})
 	})
 
 	// modify
@@ -62,47 +60,47 @@ func Init()  {
 		//var name = c.PostForm("name")
 
 		var id, err0 = strconv.Atoi(c.Query("id"))
-		if err0!=nil {
+		if err0 != nil {
 			id = -1
 		}
 		var username = c.Query("username")
 		var name = c.Query("name")
-		var age,err = strconv.Atoi(c.Query("age"))
-		if err!=nil {
+		var age, err = strconv.Atoi(c.Query("age"))
+		if err != nil {
 			age = 0
 		}
 
-		var emp = dto.Employee{Id:id,Username:username,Name:name,Age:age}
+		var emp = dto.Employee{Id: id, Username: username, Name: name, Age: age}
 		employee.Update(emp)
-
 
 		//fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
 		fmt.Printf("username: %s; age: %d; name: %s; \n", emp.Username, emp.Age, emp.Name)
 
-
 		//c.JSON(http.StatusOK, emp)
-		c.JSON(http.StatusOK, gin.H{"username":username,"name":name,"age":age,"method":"put"})
+		c.JSON(http.StatusOK, gin.H{"username": username, "name": name, "age": age, "method": "put"})
 	})
 
 	r.GET("/employee/:id", func(c *gin.Context) {
 
 		var id, err0 = strconv.Atoi(c.Param("id"))
-		if err0!=nil {
+		if err0 != nil {
 			id = -1
 		}
 
-		log.Printf("GET id = %s \n",id)
+		log.Printf("GET id = %s \n", id)
 
-		employee.Get(id)
+		var emp = employee.Get(id)
 
-		c.JSON(http.StatusOK, gin.H{"id":id,"username":"guest","name":"匿名用户","age":18,"method":"get"})
+		c.JSON(http.StatusOK, gin.H{"employee": emp, "method": "get"})
 	})
 
-
 	r.DELETE("/employee/:id", func(c *gin.Context) {
-		id := c.Param("id")
-		log.Printf("DELETE id = %s \n",id)
-		c.JSON(http.StatusOK, gin.H{"id":id,"username":"guest","name":"匿名用户","age":18,"method":"delete"})
+		var id, _ = strconv.Atoi(c.Param("id"))
+		log.Printf("DELETE id = %s \n", id)
+
+		employee.Delete(id)
+
+		c.JSON(http.StatusOK, gin.H{"id": id, "username": "guest", "name": "匿名用户", "age": 18, "method": "delete"})
 	})
 
 	// modify
@@ -119,11 +117,9 @@ func Init()  {
 		//fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
 		//fmt.Printf("id:%d ; username: %s; age: %d; name: %s; \n", emp.id,emp.username, emp.age, emp.name)
 
-
 		//c.JSON(http.StatusOK, emp)
-		c.JSON(http.StatusOK,  gin.H{"user": emp})
+		c.JSON(http.StatusOK, gin.H{"user": emp})
 	})
-
 
 	r.POST("/foo", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "foo")
@@ -157,13 +153,19 @@ func Init()  {
 		c.JSON(http.StatusOK, msg)
 	})
 
+	if err := dao.InitDb(); err != nil {
+		fmt.Printf("init DB failed,err:%v\n", err)
+		return
+	}
+	fmt.Println("init DB success")
+
 	// 监听并在 0.0.0.0:8080 上启动服务
 	//r.Run()
 	Start(r)
 
 }
 
-func Start(r *gin.Engine)  {
+func Start(r *gin.Engine) {
 	log.Printf("the server is started ! bind port:8080 ! \n")
 
 	// // 监听并在 0.0.0.0:8080 上启动服务
