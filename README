@@ -6,3 +6,6 @@ go firstweb
 https://github.com/go-sql-driver/mysql
 
 https://github.com/jmoiron/sqlx
+
+go-redis:
+https://github.com/go-redis/redis/releases

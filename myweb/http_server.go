@@ -4,6 +4,7 @@ package myweb
 import (
 	"com.kq/dao"
 	"com.kq/dao/employee"
+	"com.kq/redis"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -72,6 +73,8 @@ func Init() {
 
 		var emp = dto.Employee{Id: id, Username: username, Name: name, Age: age}
 		employee.Update(emp)
+
+		redis.Set(emp)
 
 		//fmt.Printf("id: %s; page: %s; name: %s; message: %s", id, page, name, message)
 		fmt.Printf("username: %s; age: %d; name: %s; \n", emp.Username, emp.Age, emp.Name)
